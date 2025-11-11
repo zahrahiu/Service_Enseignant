@@ -1,6 +1,5 @@
 package org.example.service_enseignant.Configuration;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,27 +16,31 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-
-    private RsaKeys rsaKeys;
+    private final RsaKeys rsaKeys;
 
     public SecurityConfig(RsaKeys rsaKeys) {
         this.rsaKeys = rsaKeys;
     }
 
     @Bean
-    public SecurityFilterChain SecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf -> csrf.disable())
-                .authorizeRequests(auth -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
                 .build();
-
     }
 
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey()).build();
     }
-
 }

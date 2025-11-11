@@ -26,7 +26,7 @@ import java.util.List;
                 version = "1.0.0"
         ),
         servers = @Server(
-                url = "http://localhost:8081"
+                url = "http://localhost:8081/"
         )
 )
 @RestController
@@ -39,7 +39,6 @@ public class EnseignantController {
         this.service = service;
     }
 
-    // ===================== CRUD Enseignant =====================
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
     public ResponseEntity<EnseignantResponseDTO> createEnseignant(@RequestBody EnseignantRequestDTO dto) {
@@ -76,7 +75,6 @@ public class EnseignantController {
         return ResponseEntity.ok(response);
     }
 
-    // ===================== Endpoint pour Stats (liaison avec Chercheurs et Projets) =====================
     @Operation(summary = "Consulter statistiques (nombre de chercheurs/projets encadrés)",
             parameters = @Parameter(name = "id", required = true),
             responses = {
